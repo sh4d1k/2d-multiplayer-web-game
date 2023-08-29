@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RealmCraft: Chronicles of Adventure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #nameInput {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #gameContainer {
+            display: none;
+        }
+        
+        #serverStatus {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+    <!-- Correct the URL to the socket.io.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Welcome to RealmCraft: Chronicles of Adventure!</h1>
+    <div id="serverStatus">Server Status: Connecting...</div>
+    <button id="startButton" onclick="showNameInput()">Start</button>
+    <div id="nameInput">
+        <label for="playerName">Enter your name:</label>
+        <input type="text" id="playerName" />
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <div id="gameContainer">
+        <script src="game.js"></script>
+    </div>
+
+    <script>
+        let serverStatusElement = document.getElementById('serverStatus');
+        let serverConnected = false;
+        
+        // WebSocket connection to the server
+        const serverURL = 'ws://127.0.0.1:5000';
+        const socket = io(serverURL);
+
+        // Handle server connection status
+        socket.on('connect', () => {
+            serverConnected = true;
+            serverStatusElement.innerText = 'Server Status: Connected';
+            serverStatusElement.style.color = 'green';
+        });
+
+        socket.on('disconnect', () => {
+            serverConnected = false;
+            serverStatusElement.innerText = 'Server Status: Disconnected';
+            serverStatusElement.style.color = 'red';
+        });
+
+        function showNameInput() {
+            document.getElementById('nameInput').style.display = 'block';
+            document.getElementById('startButton').style.display = 'none';
+        }
+
+        function startGame() {
+            const playerName = document.getElementById('playerName').value.trim();
+
+            if (!playerName) {
+                alert('Please enter your name.');
+                return;
+            }
+
+            // Hide the name input and show the game container
+            document.getElementById('nameInput').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+
+            // Pass the player name to the game initialization function
+            initializeGame(playerName);
+        }
+    </script>
+</body>
+</html>
